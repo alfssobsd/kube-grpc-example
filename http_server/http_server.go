@@ -11,11 +11,9 @@ import (
 )
 import pb "github.com/alfssobsd/kube-grpc-example/baseproto"
 
-const (
-	address = "localhost:9000"
-)
-
 func main() {
+	//Get grpc server address from env `GRPC_SERVER_ADDR`
+	address := os.Getenv("GRPC_SERVER_ADDR")
 
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
