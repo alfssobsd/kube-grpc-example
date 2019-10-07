@@ -57,3 +57,5 @@ helm install http-server --tiller-namespace your-tiller-namespace --namespace yo
 curl http://http-server-test.yourdomain.net/
 stdout>ServerName = grpc-server-test-56d9cc6b6d-4qptt
 ```
+
+if the value doesn't change all the time, you do not have load balancing GRPC
