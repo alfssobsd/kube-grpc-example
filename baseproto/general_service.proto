@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package baseproto;
+
+message ServerNameRequest {
+    string client_name = 1;
+}
+
+message ServerNameResponse {
+    string name = 1;
+}
+
+service GeneralService {
+    rpc GetServerName (ServerNameRequest) returns (ServerNameResponse);
+}
