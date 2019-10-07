@@ -1,0 +1,11 @@
+grpcServiceName: grpc-server-test:9000
+replicaCount: 1
+image:
+  repository: your-registry/test-http-server
+ingress:
+  enabled: true
+  paths:
+    - /
+  hosts:
+    - http-server-test.yourdomain.net
+  tls: []

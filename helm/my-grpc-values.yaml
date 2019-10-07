@@ -1,0 +1,3 @@
+replicaCount: 3
+image:
+  repository: your-registry/test-grpc-server

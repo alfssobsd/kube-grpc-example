@@ -1,29 +1,59 @@
-# Example app for deploy to kube (with grpc)
+# GRPC apps for testing load balancing in kubernetes
 
 ## Build
 
-### GRPC Server
+### Build GRPC Server
 ```
-docker build -t your-registry/example-grpc-server -f grpc_server/Dockerfile .
-docker push [to your registry]
-```
-### HTTP Server
-
-Set correct grpc server `address` in `http_server/http_server.go`
-
-Example:
-```
-const (
-	address = "mynamespace-releasename-grpc-server:9000"
-)
-```
-
-```
-docker build -t your-registry/example-http-server -f http_server/Dockerfile .
+docker build -t  your-registry/test-grpc-server -f grpc_server/Dockerfile .
 docker push [to your registry]
 ```
 
-## Use helm for deploy
-Set correct path to registry in helm `helm/grpc-kube-example/values.yml`
+### Build HTTP Server
+```
+docker build -t your-registry/test-http-server -f http_server/Dockerfile .
+docker push [to your registry]
+```
 
-Set correct ingress name in `helm/grpc-kube-example/values.yml`
+## Deploy servers
+
+### Deploy GRPC server
+Create your own helm values for deploy  `helm/my-grpc-values.yaml`
+```
+replicaCount: 3
+image:
+  repository: your-registry/test-grpc-server
+```
+
+Go to helm dir & start deploy
+```
+cd helm
+helm install grpc-server --tiller-namespace your-tiller-namespace --namespace your-kube-namespace --name grpc-server-test -f my-grpc-values.yaml
+```
+
+### Deploy http server
+Create your own helm values for deploy  `helm/my-http-values.yaml`
+```
+grpcServiceName: grpc-server-test:9000
+replicaCount: 1
+image:
+  repository: your-registry/test-http-server
+ingress:
+  enabled: true
+  paths:
+    - /
+  hosts:
+    - http-server-test.yourdomain.net
+  tls: []
+
+```
+Go to helm dir & start deploy
+```
+cd helm
+helm install http-server --tiller-namespace your-tiller-namespace --namespace your-kube-namespace --name http-server-test -f my-http-values.yaml
+```
+
+## Test servers
+```
+curl http://http-server-test.yourdomain.net/
+stdout>ServerName = grpc-server-test-56d9cc6b6d-4qptt
+```
